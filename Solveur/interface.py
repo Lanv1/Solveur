@@ -88,18 +88,26 @@ def get_cle(dict, val):  #pour récupérer la clé d'un dico a partir d'une vale
             return k
 
 def click_chiffre( li, grille, grilleV, x, y, pos):
-    for val in li.values():
+    key = 0
+    for r, val in enumerate(li.values()):
         if (val != "blanc" and val != "tutu") and val.collidepoint(pos):
             if grilleV[x][y] != 0:
                 if(x % 2 == 1 or y % 2 == 1):
                     screen.blit(get_cle(li, "tutu"), grille[x][y])
                 else:
                     screen.blit(get_cle(li, "blanc"), grille[x][y])
-            screen.blit(get_cle(li, val), dest(grille, x, y))
-            key = get_cle(li, val)
-            for i, k in enumerate(li):
-                if k == key:
-                    grilleV[x][y] = i
+            if x % 2 == 1 or y % 2 == 1:
+                if r > 4:
+                    screen.blit(get_cle(li, val), dest(grille, x, y))
+                    key = get_cle(li, val)
+            elif is_valeur(x, y):
+                if r <= 4:
+                    screen.blit(get_cle(li, val), dest(grille, x, y))
+                    key = get_cle(li, val)
+            if key != 0:
+                for i, k in enumerate(li):
+                    if k == key:
+                        grilleV[x][y] = i
     for a in range(dim_V):
         for b in range(dim_V):
             if grilleV[a][b] == 5 or grilleV[a][b] == 6:
@@ -194,3 +202,5 @@ while running:
     if event.type == pygame.MOUSEBUTTONUP:
         clicked = False
 pr(grille_valeurs)
+
+
