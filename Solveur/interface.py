@@ -23,7 +23,7 @@ marC = 101
 cot = int((((WINDOW_SIZE[1] * 0.9) / dim) / 3))
 marge_haut = 100
 marge_gauche = ((WINDOW_SIZE[0] - (dim * (cot + cot) - cot)) / 2)
-from Baktrak import Solveur, AfficheG
+from Baktrak import Solveur, AfficheG, DejaPres
 screen.fill(color_bg)
 pygame.display.update()
 def affiche_grille(grille_rectangles):
@@ -147,9 +147,25 @@ def reset(grilleV, grilleRect):
                 if grilleRect[i][j] != 0:
                     screen.blit(psp, destSP(grilleRect, i, j))
     affiche_grille(grilleRect)
+
 def destSP(grille, i,  j):
     return [(grille[i][j].x + 1), (grille[i][j].y + 1)]
 
+def verif_case(x, y, grille):
+    for i in range(0, dim_V,2):
+        if(i!=x and grille[i][y]==grille[x][y]):
+            return True
+    for j in range(0, dim_V,2):
+        if(j!=y and grille[x][j]==grille[x][y]):
+            return True
+    return False
+
+def verif_grille(grille):
+    for i in range(0, dim_V, 2):
+        for j in range(0, dim_V, 2):
+            if grille[i][j] != 0 and verif_case(i, j, grille):
+                return False
+    return True
 font = pygame.font.SysFont("Times New Roman, Arial", 50)
 bouton = font.render("Résoudre", True, color)
 bouton_C = bouton.get_rect(topleft = (40, 550))
@@ -187,14 +203,17 @@ while running:
                 print("<---------------------------->")
 
             if bouton_C.collidepoint( pygame.mouse.get_pos()):
-                if Solveur(grille_valeurs, dim_V, dim):
-                    AfficheG(grille_valeurs, dim_V)
-                    recons(grille_valeurs, grille_rectangles, list_val)
-                    pygame.display.update()
-                    print("<---------------------------->")
+                if verif_grille(grille_valeurs):
+                    if Solveur(grille_valeurs, dim_V, dim):
+                        AfficheG(grille_valeurs, dim_V)
+                        recons(grille_valeurs, grille_rectangles, list_val)
+                        pygame.display.update()
+                        print("<---------------------------->")
+                    else:
+                        print("Impossible à résoudre")
                 else:
-                    print("Impossible à résoudre")
-            if(X != -1 and Y != -1):
+                    print("Impossiblee a résoudre")
+            if X != -1 and Y != -1:
                 click_chiffre(li, grille_rectangles, grille_valeurs, X, Y, pygame.mouse.get_pos())
             X = renvoie_coord(grille_rectangles, pygame.mouse.get_pos())[0]
             Y = renvoie_coord(grille_rectangles, pygame.mouse.get_pos())[1]
@@ -202,5 +221,4 @@ while running:
     if event.type == pygame.MOUSEBUTTONUP:
         clicked = False
 pr(grille_valeurs)
-
-
+print(verif_grille(grille_valeurs))
